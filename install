@@ -1,6 +1,6 @@
 #!/bin/sh -eux
 
-PACKAGES = "ack-grep \
+PACKAGES="ack-grep \
     audacity \
     android-tools-adb \
     backintime-gnome \
