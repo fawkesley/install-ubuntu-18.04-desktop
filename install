@@ -1,0 +1,233 @@
+#!/bin/sh -eux
+
+PACKAGES = "ack-grep \
+    audacity \
+    android-tools-adb \
+    backintime-gnome \
+    chromium-browser \
+    clamav \
+    dos2unix \
+    expect \
+    exuberant-ctags \
+    fancontrol \
+    fdupes \
+    firejail \
+    fortune-mod \
+    fwts \
+    gcc-avr \
+    gimp \
+    git \
+    gmessage \
+    gnome-encfs-manager \
+    gnupg-curl \
+    golang-go \
+    gparted \
+    gpick \
+    gtk-recordmydesktop \
+    gvfs-backends \
+    hardinfo \
+    html2text \
+    htop \
+    httping \
+    indicator-sysmonitor \
+    inkscape \
+    irssi \
+    jq \
+    jhead \
+    lastpass-cli \
+    libav-tools \
+    libttspico-utils \
+    libimage-exiftool-perl \
+    libreadline-dev \
+    libssl-dev \
+    libvdpau-va-gl1 \
+    linphone \
+    links \
+    lm-sensors \
+    markdown \
+    mesa-utils \
+    mosh \
+    mosquitto-clients \
+    network-manager-openvpn \
+    network-manager-openvpn-gnome \
+    nfs-common \
+    nmap \
+    pavucontrol \
+    pgpdump \
+    playonlinux \
+    powertop \
+    python3-pip \
+    python3-tk \
+    python3-virtualenv \
+    python-requests \
+    python-dev \
+    rng-tools \
+    run-one \
+    sshfs \
+    smbclient \
+    screen \
+    signal-desktop \
+    sqlite3 \
+    stow \
+    synaptic \
+    tftp \
+    tk-dev \
+    tmux \
+    tmuxinator \
+    tor \
+    tree \
+    uuid \
+    virtualenv \
+    virtualenvwrapper \
+    vagrant \
+    vim-nox \
+    virtualbox \
+    vlc \
+    whois \
+    wireshark-qt \
+    xclip"
+
+check_sudo() {
+    if [ "$(whoami)" != "root"]; then
+	echo "Must be root."
+	exit 1
+    fi
+
+}
+
+prompt_yes_no() {
+  while true; do
+    read -p "$1 [y/n] " yesno
+
+    if [ "$yesno" = "y" ]; then
+      return 0
+
+    elif [ "$yesno" = "n" ]; then
+      return 1
+    fi
+  done
+}
+
+
+install_basics() {
+    apt install -y \
+	vim-nox \
+	curl
+}
+
+configure_ppas() {
+    add-apt-repository -y ppa:gencfsm
+    add-apt-repository -y ppa:fossfreedom/indicator-sysmonitor
+
+    # https://www.virtualbox.org/wiki/Linux_Downloads
+    apt-key adv --keyserver keyserver.paulfurley.com --recv-key 0xB9F8D658297AF3EFC18D5CDFA2F683C52980AECF
+    echo 'deb http://download.virtualbox.org/virtualbox/debian xenial contrib' > /etc/apt/sources.list.d/virtualbox.list
+
+
+    # https://signal.org/download/
+    apt-key adv --keyserver keyserver.paulfurley.com --recv-key 0xDBA36B5181D0C816F630E889D980A17457F6FB06
+
+    echo "deb [arch=amd64] https://updates.signal.org/desktop/apt xenial main" | sudo tee /etc/apt/sources.list.d/signal-xenial.list
+
+
+}
+
+maybe_configure_nvidia_repo() {
+  if prompt_yes_no "Install nvidia proprietary drivers?"; then
+    INSTALL_NVIDIA="1"
+
+    add-apt-repository ppa:graphics-drivers/ppa
+
+  else
+    INSTALL_NVIDIA="0"
+  fi
+}
+
+maybe_configure_entroware_repo() {
+  if prompt_yes_no "Install Entroware support hub?"; then
+    INSTALL_ENTROWARE="1"
+
+    apt-key adv --keyserver keyserver.paulfurley.com \
+      --recv-key 0xCA3C5312865FF7C68800D517AB048B642C911417 
+
+    echo "deb [arch=amd64] http://repo.entroware.com/ubuntu $(lsb_release -c -s) main" > /etc/apt/sources.list.d/entroware.list
+
+  else
+    INSTALL_ENTROWARE="0"
+  fi
+}
+
+
+apt_update() {
+    apt update
+}
+
+upgrade_and_autoremove() {
+    apt upgrade -y
+    apt autoremove -y
+}
+
+install_packages() {
+
+apt install -y $PACKAGES
+
+    # vlc-nox \
+    # pidgin \
+    # murcurial \
+    # unetbootin \
+}
+
+install_vagrant() {
+    if  vagrant --version; then
+      return
+    fi
+
+    cd /tmp/
+    wget -c 'https://releases.hashicorp.com/vagrant/2.0.1/vagrant_2.0.1_x86_64.deb'
+
+    if [ "$(sha256sum vagrant_2.0.1_x86_64.deb)" != "2f9498a83b3d650fcfcfe0ec7971070fcd3803fad6470cf7da871caf2564d84f  vagrant_2.0.1_x86_64.deb" ]; then
+	echo "Vagrant checksum failed."
+	exit 2
+    fi
+
+    dpkg -i vagrant_2.0.1_x86_64.deb
+    cd -
+}
+
+maybe_install_entroware_support_hub() {
+  if [ "$INSTALL_ENTROWARE" = "1" ]; then
+    apt install -y entroware-support-hub
+  fi
+}
+
+
+maybe_install_nvidia() {
+  if [ "$INSTALL_NVIDIA" = "1" ]; then
+	# TODO: which package do you actually need to install?
+	apt install -y nvidia-384
+    fi
+}
+
+maybe_install_intel_microcode() {
+    if prompt_yes_no "install intel microcode?" ; then
+	apt install -y intel-microcode
+    fi
+}
+
+# zerotier-one
+
+check_sudo
+install_vagrant
+install_basics
+configure_ppas
+maybe_configure_nvidia_repo
+maybe_configure_entroware_repo
+apt_update
+upgrade_and_autoremove
+install_packages
+install_vagrant
+maybe_install_entroware_support_hub
+maybe_install_nvidia
+maybe_install_intel_microcode
+
+echo "Done installing packages. Now restore backintime snapshot"
