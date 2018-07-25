@@ -215,11 +215,10 @@ maybe_install_intel_microcode() {
 # zerotier-one
 
 check_sudo
-install_vagrant
-install_basics
-configure_ppas
 maybe_configure_nvidia_repo
 maybe_configure_entroware_repo
+install_basics
+configure_ppas
 apt_update
 upgrade_and_autoremove
 install_packages
