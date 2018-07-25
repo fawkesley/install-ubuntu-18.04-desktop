@@ -18,6 +18,7 @@ PACKAGES="ack-grep \
     gimp \
     git \
     gmessage \
+    gnupg2 \
     gnome-encfs-manager \
     golang-go \
     gparted \
@@ -73,6 +74,7 @@ PACKAGES="ack-grep \
     tmux \
     tmuxinator \
     tor \
+    transmission-gtk \
     tree \
     uuid \
     virtualenv \

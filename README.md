@@ -58,9 +58,17 @@ sudo ./install-ubuntu-18.04-desktop/install
  - ... wait a while
  - make sure it finished OK
 
-## Finish setting up user
+## Reload dconf settings (GNOME)
 
- - Reinstate crontab: `crontab < ~/crontab.txt`
+```
+dconf load / < ~/dotfiles/_other/dconf-dump.txt
+```
+
+## Re-enable crontab
+
+```
+crontab < ~/crontab.txt`
+```
 
 ## Reinstate`~/dotfiles`
 
