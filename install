@@ -19,7 +19,6 @@ PACKAGES="ack-grep \
     git \
     gmessage \
     gnome-encfs-manager \
-    gnupg-curl \
     golang-go \
     gparted \
     gpick \
