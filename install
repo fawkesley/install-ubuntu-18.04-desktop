@@ -35,7 +35,6 @@ PACKAGES="ack-grep \
     jq \
     jhead \
     lastpass-cli \
-    libav-tools \
     libttspico-utils \
     libimage-exiftool-perl \
     libreadline-dev \
