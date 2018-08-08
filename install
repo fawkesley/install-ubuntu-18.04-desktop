@@ -20,6 +20,7 @@ PACKAGES="ack-grep \
     gmessage \
     gnupg2 \
     gnome-encfs-manager \
+    gnome-tweaks \
     golang-go \
     gparted \
     gpick \
@@ -60,6 +61,7 @@ PACKAGES="ack-grep \
     python3-virtualenv \
     python-requests \
     python-dev \
+    reprepro \
     rng-tools \
     run-one \
     sshfs \
@@ -76,6 +78,7 @@ PACKAGES="ack-grep \
     tor \
     transmission-gtk \
     tree \
+    usb-creator-gtk \
     uuid \
     virtualenv \
     virtualenvwrapper \
