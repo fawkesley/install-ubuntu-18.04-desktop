@@ -6,6 +6,7 @@ PACKAGES="ack-grep \
     backintime-gnome \
     chromium-browser \
     clamav \
+    diceware \
     dos2unix \
     expect \
     exuberant-ctags \
