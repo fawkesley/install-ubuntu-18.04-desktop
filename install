@@ -50,6 +50,7 @@ PACKAGES="ack-grep \
     mesa-utils \
     mosh \
     mosquitto-clients \
+    net-tools \
     network-manager-openvpn \
     network-manager-openvpn-gnome \
     nfs-common \
