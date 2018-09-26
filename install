@@ -75,6 +75,7 @@ PACKAGES="ack-grep \
     stow \
     syncthing \
     synaptic \
+    thunderbird \
     tftp \
     tk-dev \
     tmux \
@@ -95,7 +96,7 @@ PACKAGES="ack-grep \
     xclip"
 
 check_sudo() {
-    if [ "$(whoami)" != "root"]; then
+    if [ "$(whoami)" != "root" ]; then
 	echo "Must be root."
 	exit 1
     fi
