@@ -206,6 +206,16 @@ install_vagrant() {
     cd -
 }
 
+install_standard_notes() {
+  cd /tmp
+  wget https://github.com/standardnotes/desktop/releases/download/v2.3.3/standard-notes-2.3.3-x86_64.AppImage
+  chmod +x standard-notes-2.3.3-x86_64.AppImage
+  ./standard-notes-2.3.3-x86_64.AppImage
+  cd -
+
+
+}
+
 maybe_install_entroware_support_hub() {
   if [ "$INSTALL_ENTROWARE" = "1" ]; then
     apt install -y entroware-support-hub
@@ -237,6 +247,7 @@ apt_update
 upgrade_and_autoremove
 install_packages
 install_vagrant
+install_standard_notes
 maybe_install_entroware_support_hub
 maybe_install_nvidia
 maybe_install_intel_microcode
