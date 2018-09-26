@@ -73,6 +73,7 @@ PACKAGES="ack-grep \
     signal-desktop \
     sqlite3 \
     stow \
+    syncthing \
     synaptic \
     tftp \
     tk-dev \
@@ -136,6 +137,10 @@ configure_ppas() {
     echo "deb [arch=amd64] https://updates.signal.org/desktop/apt xenial main" | sudo tee /etc/apt/sources.list.d/signal-xenial.list
 
 
+    # https://apt.syncthing.net/
+
+    curl -s https://syncthing.net/release-key.txt | sudo apt-key add -
+    echo "deb https://apt.syncthing.net/ syncthing stable" | sudo tee /etc/apt/sources.list.d/syncthing.list
 }
 
 maybe_configure_nvidia_repo() {
