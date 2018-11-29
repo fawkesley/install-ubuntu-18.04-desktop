@@ -59,6 +59,8 @@ PACKAGES="ack-grep \
     pgpdump \
     playonlinux \
     powertop \
+    postgresql-client-common \
+    postgresql-client-10 \
     python3-pip \
     python3-tk \
     python3-virtualenv \
@@ -67,6 +69,7 @@ PACKAGES="ack-grep \
     reprepro \
     rng-tools \
     run-one \
+    safe-rm \
     sshfs \
     smbclient \
     screen \
