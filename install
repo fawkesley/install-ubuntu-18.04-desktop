@@ -164,21 +164,6 @@ maybe_configure_nvidia_repo() {
   fi
 }
 
-maybe_configure_entroware_repo() {
-  if prompt_yes_no "Install Entroware support hub?"; then
-    INSTALL_ENTROWARE="1"
-
-    apt-key adv --keyserver keyserver.paulfurley.com \
-      --recv-key 0xCA3C5312865FF7C68800D517AB048B642C911417 
-
-    echo "deb [arch=amd64] http://repo.entroware.com/ubuntu $(lsb_release -c -s) main" > /etc/apt/sources.list.d/entroware.list
-
-  else
-    INSTALL_ENTROWARE="0"
-  fi
-}
-
-
 apt_update() {
     apt update
 }
@@ -225,13 +210,6 @@ install_standard_notes() {
 
 }
 
-maybe_install_entroware_support_hub() {
-  if [ "$INSTALL_ENTROWARE" = "1" ]; then
-    apt install -y entroware-support-hub
-  fi
-}
-
-
 maybe_install_nvidia() {
   if [ "$INSTALL_NVIDIA" = "1" ]; then
 	# TODO: which package do you actually need to install?
@@ -249,7 +227,6 @@ maybe_install_intel_microcode() {
 
 check_sudo
 maybe_configure_nvidia_repo
-maybe_configure_entroware_repo
 install_basics
 configure_ppas
 apt_update
@@ -257,7 +234,6 @@ upgrade_and_autoremove
 install_packages
 install_vagrant
 install_standard_notes
-maybe_install_entroware_support_hub
 maybe_install_nvidia
 maybe_install_intel_microcode
 
