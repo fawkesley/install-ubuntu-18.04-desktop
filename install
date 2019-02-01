@@ -6,8 +6,10 @@ PACKAGES="ack-grep \
     backintime-gnome \
     chromium-browser \
     clamav \
+    devscripts \
     diceware \
     dos2unix \
+    dput \
     expect \
     exuberant-ctags \
     fancontrol \
@@ -46,6 +48,7 @@ PACKAGES="ack-grep \
     linphone \
     links \
     lm-sensors \
+    magic-wormhole \
     markdown \
     mesa-utils \
     mosh \
@@ -56,6 +59,7 @@ PACKAGES="ack-grep \
     nfs-common \
     nmap \
     pavucontrol \
+    pidgin \
     pgpdump \
     playonlinux \
     powertop \
@@ -86,8 +90,10 @@ PACKAGES="ack-grep \
     tor \
     transmission-gtk \
     tree \
+    ubuntu-dev-tools \
     usb-creator-gtk \
     uuid \
+    unattended-upgrades \
     virtualenv \
     virtualenvwrapper \
     vagrant \
