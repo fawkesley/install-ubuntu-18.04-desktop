@@ -69,6 +69,7 @@ PACKAGES="ack-grep \
     python3-virtualenv \
     python-requests \
     python-dev \
+    rename \
     reprepro \
     rng-tools \
     run-one \
