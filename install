@@ -13,6 +13,7 @@ PACKAGES="ack-grep \
     expect \
     exuberant-ctags \
     fancontrol \
+    ffmpeg \
     fdupes \
     firejail \
     fortune-mod \
