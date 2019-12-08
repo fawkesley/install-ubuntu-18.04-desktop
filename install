@@ -58,6 +58,7 @@ PACKAGES="ack-grep \
     network-manager-openvpn-gnome \
     nfs-common \
     nmap \
+    openresolv \
     pavucontrol \
     pidgin \
     pgpdump \
@@ -103,6 +104,7 @@ PACKAGES="ack-grep \
     vlc \
     whois \
     wireshark-qt \
+    wireguard \
     xclip"
 
 check_sudo() {
@@ -152,6 +154,11 @@ configure_ppas() {
 
     curl -s https://syncthing.net/release-key.txt | sudo apt-key add -
     echo "deb https://apt.syncthing.net/ syncthing stable" | sudo tee /etc/apt/sources.list.d/syncthing.list
+
+
+    # Wireguard, provides wireguard, openresolv
+
+    sudo add-apt-repository ppa:wireguard/wireguard
 }
 
 maybe_configure_nvidia_repo() {
