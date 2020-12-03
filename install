@@ -10,6 +10,8 @@ PACKAGES="ack-grep \
     diceware \
     dos2unix \
     dput \
+    exfat-fuse \
+    exfat-utils \
     expect \
     exuberant-ctags \
     fancontrol \
