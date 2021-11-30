@@ -233,6 +233,11 @@ install_node_14() {
   sudo apt-get install -y nodejs
 }
 
+install_hugo_0_57_2() {
+  wget -O /tmp/hugo_extended.deb https://github.com/gohugoio/hugo/releases/download/v0.57.2/hugo_extended_0.57.2_Linux-64bit.deb
+  dpkg -i /tmp/hugo_extended.deb
+}
+
 maybe_install_nvidia() {
   if [ "$INSTALL_NVIDIA" = "1" ]; then
 	# TODO: which package do you actually need to install?
@@ -259,6 +264,7 @@ install_vagrant
 install_standard_notes
 install_go_dep
 install_node_14
+install_hugo_0_57_2
 maybe_install_nvidia
 maybe_install_intel_microcode
 
