@@ -228,6 +228,11 @@ install_go_dep() {
   go get -u github.com/golang/dep/cmd/dep
 }
 
+install_node_14() {
+  curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+  sudo apt-get install -y nodejs
+}
+
 maybe_install_nvidia() {
   if [ "$INSTALL_NVIDIA" = "1" ]; then
 	# TODO: which package do you actually need to install?
@@ -253,6 +258,7 @@ install_packages
 install_vagrant
 install_standard_notes
 install_go_dep
+install_node_14
 maybe_install_nvidia
 maybe_install_intel_microcode
 
