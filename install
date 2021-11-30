@@ -161,6 +161,11 @@ configure_ppas() {
     # Wireguard, provides wireguard, openresolv
 
     sudo add-apt-repository ppa:wireguard/wireguard
+
+
+    # Inkscape
+    # https://inkscape.org/release/
+    sudo add-apt-repository ppa:inkscape.dev/stable
 }
 
 maybe_configure_nvidia_repo() {
