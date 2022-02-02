@@ -226,6 +226,22 @@ install_standard_notes() {
   cd -
 }
 
+install_golang_1_16_4() {
+    GO_TARBALL=/tmp/download/go1.16.4.linux-amd64.tar.gz
+    GO_URL=https://dl.google.com/go/go1.16.4.linux-amd64.tar.gz
+
+    if [ ! -f "${GO_TARBALL}" ]; then
+	atomic_download "${GO_URL}" "${GO_TARBALL}"
+    fi
+
+    rm -rf /opt/go
+    mkdir /opt/go
+    # tarball paths start go/...
+    tar --directory /opt --extract -f "${GO_TARBALL}"
+
+    ln -sf /vagrant/vagrant/etc/profile.d/golang.sh /etc/profile.d/golang.sh
+}
+
 install_go_dep() {
   go get -u github.com/golang/dep/cmd/dep
 }
@@ -264,6 +280,7 @@ upgrade_and_autoremove
 install_packages
 install_vagrant
 install_standard_notes
+install_golang_1_16_4
 install_go_dep
 install_node_14
 install_hugo_0_57_2
