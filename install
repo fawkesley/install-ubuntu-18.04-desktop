@@ -27,7 +27,6 @@ PACKAGES="ack-grep \
     gnupg2 \
     gnome-encfs-manager \
     gnome-tweaks \
-    golang-go \
     gparted \
     gpick \
     gtk-recordmydesktop \
