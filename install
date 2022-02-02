@@ -251,8 +251,8 @@ install_node_14() {
   sudo apt-get install -y nodejs
 }
 
-install_hugo_0_57_2() {
-  wget -O /tmp/hugo_extended.deb https://github.com/gohugoio/hugo/releases/download/v0.57.2/hugo_extended_0.57.2_Linux-64bit.deb
+install_hugo_0_82_0() {
+  wget -O /tmp/hugo_extended.deb https://github.com/gohugoio/hugo/releases/download/v0.82.0/hugo_extended_0.82.0_Linux-64bit.deb
   dpkg -i /tmp/hugo_extended.deb
 }
 
@@ -283,7 +283,7 @@ install_standard_notes
 install_golang_1_16_4
 install_go_dep
 install_node_14
-install_hugo_0_57_2
+install_hugo_0_82_0
 maybe_install_nvidia
 maybe_install_intel_microcode
 
