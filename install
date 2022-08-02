@@ -1,11 +1,20 @@
 #!/bin/sh -eux
 
-PACKAGES="ack-grep \
+
+PPA_PACKAGES="signal-desktop \
+    indicator-sysmonitor \
+    syncthing \
+    inkscape \
+    1password \
+    "
+
+STANDARD_PACKAGES="ack-grep \
     audacity \
     android-tools-adb \
-    backintime-gnome \
+    backintime-qt \
     chromium-browser \
     clamav \
+    colordiff \
     devscripts \
     diceware \
     dos2unix \
@@ -29,18 +38,14 @@ PACKAGES="ack-grep \
     gnome-tweaks \
     gparted \
     gpick \
-    gtk-recordmydesktop \
     gvfs-backends \
     hardinfo \
     html2text \
     htop \
     httping \
-    indicator-sysmonitor \
-    inkscape \
     irssi \
     jq \
     jhead \
-    lastpass-cli \
     libttspico-utils \
     libimage-exiftool-perl \
     libreadline-dev \
@@ -49,14 +54,11 @@ PACKAGES="ack-grep \
     linphone \
     links \
     lm-sensors \
-    magic-wormhole \
     markdown \
     mesa-utils \
     mosh \
     mosquitto-clients \
     net-tools \
-    network-manager-openvpn \
-    network-manager-openvpn-gnome \
     nfs-common \
     nmap \
     openresolv \
@@ -66,12 +68,6 @@ PACKAGES="ack-grep \
     playonlinux \
     powertop \
     postgresql-client-common \
-    postgresql-client-10 \
-    python3-pip \
-    python3-tk \
-    python3-virtualenv \
-    python-requests \
-    python-dev \
     rename \
     reprepro \
     rng-tools \
@@ -80,17 +76,14 @@ PACKAGES="ack-grep \
     sshfs \
     smbclient \
     screen \
-    signal-desktop \
     sqlite3 \
     stow \
-    syncthing \
     synaptic \
     thunderbird \
     tftp \
     tk-dev \
     tmux \
     tmuxinator \
-    tor \
     transmission-gtk \
     tree \
     ubuntu-dev-tools \
@@ -98,8 +91,6 @@ PACKAGES="ack-grep \
     uuid \
     unattended-upgrades \
     unrar \
-    virtualenv \
-    virtualenvwrapper \
     vagrant \
     vim-nox \
     virtualbox \
@@ -108,6 +99,21 @@ PACKAGES="ack-grep \
     wireshark-qt \
     wireguard \
     xclip"
+
+    # gtk-recordmydesktop \
+    # postgresql-client-10 \
+    # python-requests \
+    # python3-pip \
+    # python3-tk \
+    # python3-virtualenv \
+    # python-dev \
+    # virtualenv \
+    # virtualenvwrapper \
+    # magic-wormhole \
+    # lastpass-cli \
+    # tor \
+    # network-manager-openvpn \
+    # network-manager-openvpn-gnome \
 
 check_sudo() {
     if [ "$(whoami)" != "root" ]; then
@@ -138,37 +144,68 @@ install_basics() {
 }
 
 configure_ppas() {
-    add-apt-repository -y ppa:gencfsm
-    add-apt-repository -y ppa:fossfreedom/indicator-sysmonitor
+    # e.g. focal  = ubuntu 20.04 LTS
+    #      xenial = ubuntu 18.04 LTS
+    CODENAME=$(lsb_release --codename --short)
 
-    # https://www.virtualbox.org/wiki/Linux_Downloads
-    apt-key adv --keyserver keyserver.paulfurley.com --recv-key 0xB9F8D658297AF3EFC18D5CDFA2F683C52980AECF
-    echo 'deb http://download.virtualbox.org/virtualbox/debian xenial contrib' > /etc/apt/sources.list.d/virtualbox.list
-
-
-    # https://signal.org/download/
-    apt-key adv --keyserver keyserver.paulfurley.com --recv-key 0xDBA36B5181D0C816F630E889D980A17457F6FB06
-
-    echo "deb [arch=amd64] https://updates.signal.org/desktop/apt xenial main" | sudo tee /etc/apt/sources.list.d/signal-xenial.list
+    if [ ! -f "/etc/apt/sources.list.d/gencfsm-ubuntu-ppa-focal.list" ]; then
+        add-apt-repository -y ppa:gencfsm
+    fi
 
 
-    # https://apt.syncthing.net/
+    if [ ! -f "/etc/apt/sources.list.d/fossfreedom-ubuntu-indicator-sysmonitor-focal.list" ]; then
+	add-apt-repository -y ppa:fossfreedom/indicator-sysmonitor
+    fi
 
-    curl -s https://syncthing.net/release-key.txt | sudo apt-key add -
-    echo "deb https://apt.syncthing.net/ syncthing stable" | sudo tee /etc/apt/sources.list.d/syncthing.list
+    if [ ! -f "/etc/apt/sources.list.d/virtualbox-${CODENAME}.list" ]; then
+        # https://www.virtualbox.org/wiki/Linux_Downloads
+        apt-key adv --keyserver keyserver.ubuntu.com --recv-key 0xB9F8D658297AF3EFC18D5CDFA2F683C52980AECF
+        echo "deb http://download.virtualbox.org/virtualbox/debian ${CODENAME} contrib" > /etc/apt/sources.list.d/virtualbox-${CODENAME}.list
+    fi
 
 
-    # Wireguard, provides wireguard, openresolv
+    if [ ! -f "/etc/apt/sources.list.d/signal-xenial.list" ]; then
+         # https://signal.org/download/
+         # 2022-02-02 they currently only provide a "xenial" repositry
+         apt-key adv --keyserver keyserver.ubuntu.com --recv-key 0xDBA36B5181D0C816F630E889D980A17457F6FB06
+         echo "deb [arch=amd64] https://updates.signal.org/desktop/apt xenial main" | sudo tee /etc/apt/sources.list.d/signal-xenial.list
+    fi
 
-    sudo add-apt-repository ppa:wireguard/wireguard
+
+    if [ ! -f "/etc/apt/sources.list.d/syncthing.list" ]; then
+        # https://apt.syncthing.net/
+        curl -s https://syncthing.net/release-key.txt | sudo apt-key add -
+        echo "deb https://apt.syncthing.net/ syncthing stable" | sudo tee /etc/apt/sources.list.d/syncthing.list
+    fi
+
+    if [ ! -f "/etc/apt/sources.list.d/inkscape_dev-ubuntu-stable-focal.list" ]; then
+        # Inkscape
+        # https://inkscape.org/release/
+        add-apt-repository ppa:inkscape.dev/stable
+    fi
+
+    if [ ! -f "/etc/apt/sources.list.d/1password.list" ]; then
+      # https://support.1password.com/install-linux/#debian-or-ubuntu
+
+      # Add the key for the 1Password apt repository:
+      curl -sS https://downloads.1password.com/linux/keys/1password.asc | sudo gpg --dearmor --output /usr/share/keyrings/1password-archive-keyring.gpg
+
+      # Add the 1Password apt repository:
+      echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/amd64 stable main' | sudo tee /etc/apt/sources.list.d/1password.list
 
 
-    # Inkscape
-    # https://inkscape.org/release/
-    sudo add-apt-repository ppa:inkscape.dev/stable
+      # Add the debsig-verify policy:
+      mkdir -p /etc/debsig/policies/AC2D62742012EA22/
+      curl -sS https://downloads.1password.com/linux/debian/debsig/1password.pol | tee /etc/debsig/policies/AC2D62742012EA22/1password.pol
+      mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22
+      curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg
+    fi
 }
 
 maybe_configure_nvidia_repo() {
+  INSTALL_NVIDIA=0
+  return 0
+
   if prompt_yes_no "Install nvidia proprietary drivers?"; then
     INSTALL_NVIDIA="1"
 
@@ -188,14 +225,33 @@ upgrade_and_autoremove() {
     apt autoremove -y
 }
 
-install_packages() {
+install_standard_packages() {
 
-apt install -y $PACKAGES
+apt install -y $STANDARD_PACKAGES
 
     # vlc-nox \
     # pidgin \
     # murcurial \
     # unetbootin \
+}
+
+install_ppa_packages() {
+    apt install -y $PPA_PACKAGES
+}
+
+atomic_download() {
+    URL=$1
+    DEST=$2
+
+    if [ -f "${DEST}" ]; then
+      return 0 # already downloaded
+    fi
+
+    mkdir -p "$(dirname $DEST)"
+
+    TMP="$(tempfile)"
+
+    wget -qO "${TMP}" "${URL}" && mv "${TMP}" "${DEST}"
 }
 
 install_vagrant() {
@@ -216,20 +272,24 @@ install_vagrant() {
 }
 
 install_standard_notes() {
-  cd /tmp
-  wget https://github.com/standardnotes/desktop/releases/download/v2.3.3/standard-notes-2.3.3-x86_64.AppImage
-  chmod +x standard-notes-2.3.3-x86_64.AppImage
-  ./standard-notes-2.3.3-x86_64.AppImage
-  cd -
+  atomic_download https://github.com/standardnotes/desktop/releases/download/v2.3.3/standard-notes-2.3.3-x86_64.AppImage /opt/standard-notes/standard-notes-2.3.3-x86_64.AppImage
+
+  chmod +x /opt/standard-notes/standard-notes-2.3.3-x86_64.AppImage
+
+  ln -sf /opt/standard-notes/standard-notes-2.3.3-x86_64.AppImage /home/paul/bin/standardnotes
 }
 
+
 install_golang_1_16_4() {
+    if [ -f "/opt/go/bin/go" ]; then
+      echo "/opt/go/bin/go already installed, skipping. To force, run 'rm -rf /opt/go'"
+      return 0
+    fi
+
     GO_TARBALL=/tmp/download/go1.16.4.linux-amd64.tar.gz
     GO_URL=https://dl.google.com/go/go1.16.4.linux-amd64.tar.gz
 
-    if [ ! -f "${GO_TARBALL}" ]; then
-	atomic_download "${GO_URL}" "${GO_TARBALL}"
-    fi
+    atomic_download "${GO_URL}" "${GO_TARBALL}"
 
     rm -rf /opt/go
     mkdir /opt/go
@@ -237,10 +297,6 @@ install_golang_1_16_4() {
     tar --directory /opt --extract -f "${GO_TARBALL}"
 
     ln -sf /vagrant/vagrant/etc/profile.d/golang.sh /etc/profile.d/golang.sh
-}
-
-install_go_dep() {
-  go get -u github.com/golang/dep/cmd/dep
 }
 
 install_node_14() {
@@ -251,6 +307,17 @@ install_node_14() {
 install_hugo_0_82_0() {
   wget -O /tmp/hugo_extended.deb https://github.com/gohugoio/hugo/releases/download/v0.82.0/hugo_extended_0.82.0_Linux-64bit.deb
   dpkg -i /tmp/hugo_extended.deb
+}
+
+install_espanso() {
+  if which espanso ; then
+    return
+  fi
+
+  apt install -y libxtst6 libxdo3 xclip libnotify-bin
+
+  atomic_download https://github.com/federico-terzi/espanso/releases/download/v0.7.3/espanso-debian-amd64.deb /tmp/espanso-debian-amd64.deb
+  dpkg -i /tmp/espanso-debian-amd64.deb
 }
 
 maybe_install_nvidia() {
@@ -271,16 +338,17 @@ maybe_install_intel_microcode() {
 check_sudo
 maybe_configure_nvidia_repo
 install_basics
+upgrade_and_autoremove
+install_standard_packages
 configure_ppas
 apt_update
-upgrade_and_autoremove
-install_packages
+install_ppa_packages
 install_vagrant
 install_standard_notes
 install_golang_1_16_4
-install_go_dep
 install_node_14
 install_hugo_0_82_0
+install_espanso
 maybe_install_nvidia
 maybe_install_intel_microcode
 
