@@ -38,6 +38,7 @@ PACKAGES="ack-grep \
     httping \
     indicator-sysmonitor \
     inkscape \
+    inotify-tools \
     irssi \
     jq \
     jhead \
