@@ -60,6 +60,7 @@ PACKAGES="ack-grep \
     network-manager-openvpn \
     network-manager-openvpn-gnome \
     nfs-common \
+    nfs-kernel-server \
     nmap \
     openresolv \
     pavucontrol \
