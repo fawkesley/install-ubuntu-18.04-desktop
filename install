@@ -1,26 +1,28 @@
 #!/bin/sh -eux
 
+BASIC_PACKAGES="vim-nox \
+ 	curl"
 
 PPA_PACKAGES="signal-desktop \
+    gnome-encfs-manager \
+    heroku \
     indicator-sysmonitor \
     syncthing \
     inkscape \
     1password \
+    virtualbox \
+    postgresql-client-13 \
     "
 
 STANDARD_PACKAGES="ack-grep \
+    apt-transport-https \
     audacity \
-    android-tools-adb \
     backintime-qt \
-    chromium-browser \
-    clamav \
     colordiff \
     devscripts \
     diceware \
     dos2unix \
     dput \
-    exfat-fuse \
-    exfat-utils \
     expect \
     exuberant-ctags \
     fancontrol \
@@ -34,7 +36,6 @@ STANDARD_PACKAGES="ack-grep \
     git \
     gmessage \
     gnupg2 \
-    gnome-encfs-manager \
     gnome-tweaks \
     gparted \
     gpick \
@@ -58,16 +59,12 @@ STANDARD_PACKAGES="ack-grep \
     markdown \
     mesa-utils \
     mosh \
-    mosquitto-clients \
     net-tools \
     nfs-common \
     nfs-kernel-server \
     nmap \
     openresolv \
     pavucontrol \
-    pidgin \
-    pgpdump \
-    playonlinux \
     powertop \
     postgresql-client-common \
     rename \
@@ -93,15 +90,21 @@ STANDARD_PACKAGES="ack-grep \
     uuid \
     unattended-upgrades \
     unrar \
-    vagrant \
     vim-nox \
-    virtualbox \
     vlc \
     whois \
     wireshark-qt \
     wireguard \
     xclip"
 
+    # mosquitto-clients \
+    # pidgin \
+    # pgpdump \
+    # playonlinux \
+    # chromium-browser \
+    # clamav \
+    # exfat-fuse \
+    # exfat-utils \
     # gtk-recordmydesktop \
     # postgresql-client-10 \
     # python-requests \
@@ -140,25 +143,33 @@ prompt_yes_no() {
 
 
 install_basics() {
-    apt install -y \
-	vim-nox \
-	curl
+    apt install -y $BASIC_PACKAGES
 }
 
 configure_ppas() {
     # e.g. focal  = ubuntu 20.04 LTS
-    #      xenial = ubuntu 18.04 LTS
+    #      jammy  = ubuntu 22.04 LTS
     CODENAME=$(lsb_release --codename --short)
 
-    if [ ! -f "/etc/apt/sources.list.d/gencfsm-ubuntu-ppa-focal.list" ]; then
+    ########## postgresql ##########
+    if [ ! -f "/etc/apt/sources.list.d/postgreql-${CODENAME}.list" ]; then
+        echo "deb https://apt.postgresql.org/pub/repos/apt ${CODENAME}-pgdg main" > /etc/apt/sources.list.d/postgreql-${CODENAME}.list
+        wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+    fi
+
+
+    ########## gencfsm ##########
+    if [ ! -f "/etc/apt/sources.list.d/gencfsm-ubuntu-ppa-${CODENAME}.list" ]; then
         add-apt-repository -y ppa:gencfsm
     fi
 
 
-    if [ ! -f "/etc/apt/sources.list.d/fossfreedom-ubuntu-indicator-sysmonitor-focal.list" ]; then
+    ########## indicator-sysmonitor ##########
+    if [ ! -f "/etc/apt/sources.list.d/fossfreedom-ubuntu-indicator-sysmonitor-${CODENAME}.list" ]; then
 	add-apt-repository -y ppa:fossfreedom/indicator-sysmonitor
     fi
 
+    ########## virtualbox ##########
     if [ ! -f "/etc/apt/sources.list.d/virtualbox-${CODENAME}.list" ]; then
         # https://www.virtualbox.org/wiki/Linux_Downloads
         apt-key adv --keyserver keyserver.ubuntu.com --recv-key 0xB9F8D658297AF3EFC18D5CDFA2F683C52980AECF
@@ -166,6 +177,7 @@ configure_ppas() {
     fi
 
 
+    ########## signal ##########
     if [ ! -f "/etc/apt/sources.list.d/signal-xenial.list" ]; then
          # https://signal.org/download/
          # 2022-02-02 they currently only provide a "xenial" repositry
@@ -174,18 +186,32 @@ configure_ppas() {
     fi
 
 
+    ########## syncthing ##########
     if [ ! -f "/etc/apt/sources.list.d/syncthing.list" ]; then
         # https://apt.syncthing.net/
         curl -s https://syncthing.net/release-key.txt | sudo apt-key add -
         echo "deb https://apt.syncthing.net/ syncthing stable" | sudo tee /etc/apt/sources.list.d/syncthing.list
     fi
 
-    if [ ! -f "/etc/apt/sources.list.d/inkscape_dev-ubuntu-stable-focal.list" ]; then
+    ########## inkscape ##########
+    if [ ! -f "/etc/apt/sources.list.d/inkscape_dev-ubuntu-stable-${CODENAME}.list" ]; then
         # Inkscape
         # https://inkscape.org/release/
         add-apt-repository ppa:inkscape.dev/stable
     fi
 
+    ########## heroku ##########
+    if [ ! -f "/etc/apt/sources.list.d/heroku.list" ]; then
+        # Heroku
+        # https://devcenter.heroku.com/articles/heroku-cli#install-with-ubuntu-debian-apt-get
+
+        # install heroku's release key for package verification
+        curl https://cli-assets.heroku.com/channels/stable/apt/release.key | apt-key add -
+
+        echo "deb https://cli-assets.heroku.com/channels/stable/apt ./" > /etc/apt/sources.list.d/heroku.list
+    fi
+
+    ########## 1password ##########
     if [ ! -f "/etc/apt/sources.list.d/1password.list" ]; then
       # https://support.1password.com/install-linux/#debian-or-ubuntu
 
@@ -194,7 +220,6 @@ configure_ppas() {
 
       # Add the 1Password apt repository:
       echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/amd64 stable main' | sudo tee /etc/apt/sources.list.d/1password.list
-
 
       # Add the debsig-verify policy:
       mkdir -p /etc/debsig/policies/AC2D62742012EA22/
@@ -251,7 +276,7 @@ atomic_download() {
 
     mkdir -p "$(dirname $DEST)"
 
-    TMP="$(tempfile)"
+    TMP="$(mktemp)"
 
     wget -qO "${TMP}" "${URL}" && mv "${TMP}" "${DEST}"
 }
@@ -307,19 +332,46 @@ install_node_14() {
 }
 
 install_hugo_0_82_0() {
+  if which hugo ; then
+    return
+  fi
+
   wget -O /tmp/hugo_extended.deb https://github.com/gohugoio/hugo/releases/download/v0.82.0/hugo_extended_0.82.0_Linux-64bit.deb
   dpkg -i /tmp/hugo_extended.deb
 }
 
-install_espanso() {
+install_espanso_2_1_8_x11() {
   if which espanso ; then
     return
   fi
 
   apt install -y libxtst6 libxdo3 xclip libnotify-bin
 
-  atomic_download https://github.com/federico-terzi/espanso/releases/download/v0.7.3/espanso-debian-amd64.deb /tmp/espanso-debian-amd64.deb
+  atomic_download https://github.com/federico-terzi/espanso/releases/download/v2.1.8/espanso-debian-x11-amd64.deb /tmp/espanso-debian-amd64.deb
   dpkg -i /tmp/espanso-debian-amd64.deb
+}
+
+install_zoom_5_16_2() {
+  if which zoom ; then
+    return
+  fi
+
+  VERSION="5.16.2.8828"
+
+  # the following dependencies were valid for 5.16.2.8828
+  apt install -y libgl1-mesa-glx libegl1-mesa libxcb-xtest0 libxcb-cursor0
+
+  atomic_download https://us06web.zoom.us/client/${VERSION}/zoom_amd64.deb /tmp/zoom_${VERSION}.deb
+  dpkg -i /tmp/zoom_${VERSION}.deb
+}
+
+install_heroku_cli() {
+  if which heroku ; then
+    return
+  fi
+
+
+
 }
 
 maybe_install_nvidia() {
@@ -348,9 +400,11 @@ install_ppa_packages
 install_vagrant
 install_standard_notes
 install_golang_1_16_4
-install_node_14
+# install_node_14
 install_hugo_0_82_0
-install_espanso
+install_espanso_2_1_8_x11
+install_zoom_5_16_2
+install_heroku_cli
 maybe_install_nvidia
 maybe_install_intel_microcode
 
